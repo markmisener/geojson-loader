@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8' />
+  <title>Geojson loader</title>
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css" rel="stylesheet">
+  <link href="static/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+  <div id= "wrap">
+    <input id="file" type="file"/>
+    <div id="map"></div>
+ </div>
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoibW1pc2VuZXIiLCJhIjoiY2tpbnNodXAyMTYzaDJ5cnh2MzhhZTdrOSJ9.2kqiWW_ezo14wsaONE-MjQ';
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [-10, 30],
+      zoom: 1.3
+    });
+
+    map.on('load', () => {
+      map.addSource('user-data', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: []
+        }
+      });
+    });
+  </script>
+  <script src='src/turf.min.js'></script>
+  <script src='src/index.js'></script>
+</body>
+
+</html>
