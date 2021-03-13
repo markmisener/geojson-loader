@@ -24,14 +24,18 @@
       zoom: 1.3
     });
 
+    const defaultGeoJSONSource = {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: []
+      }
+    };
+
     map.on('load', () => {
-      map.addSource('user-data', {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: []
-        }
-      });
+      map.addSource('data-lines', defaultGeoJSONSource);
+      map.addSource('data-polygons', defaultGeoJSONSource);
+      map.addSource('data-points', defaultGeoJSONSource);
     });
   </script>
   <script src='src/turf.min.js'></script>
