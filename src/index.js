@@ -104,26 +104,29 @@ function onReaderLoad(event) {
 
   // add popups
   layers.forEach(layer => {
+    map.on('mouseenter', layer, function () {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+
+    map.on('mouseleave', layer, function () {
+      map.getCanvas().style.cursor = '';
+    });
+
     map.on('click', layer, function (e) {
-      if (e.features[0].properties.length > 0) {
-        var htmlStr = '<ul>';
+      if (Object.keys(e.features[0].properties).length > 0) {
+        var htmlStr = '<div><ul>';
         Object.entries(e.features[0].properties).forEach(entry => {
-          htmlStr = htmlStr.concat(`<li>${entry[0]}: ${entry[1]}</li>`)
+          // add all properties except `other_tags`
+          if (entry[0] !== 'other_tags') {
+              htmlStr = htmlStr.concat(`<li>${entry[0]}: ${entry[1]}</li>`)
+          }
         });
-        htmlStr.concat('</ul>')
+        htmlStr.concat('</ul></div>')
 
         new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(htmlStr)
         .addTo(map);
-
-        map.on('mouseenter', layer, function () {
-          map.getCanvas().style.cursor = 'pointer';
-        });
-
-        map.on('mouseleave', layer, function () {
-          map.getCanvas().style.cursor = '';
-        });
 
       }
     });
