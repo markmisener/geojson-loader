@@ -21,7 +21,10 @@ function clearLayers(layers) {
 }
 
 function onReaderLoad(event) {
-  clearLayers(['data-line', 'data-polygons', 'data-points'])
+  // clear layers, if the already exist
+  const layers = ['data-line', 'data-polygons', 'data-points'];
+  clearLayers(layers);
+
   var geojsonObj = attemptJSONParse(event.target.result);
   if (geojsonObj === false) {
     alert("File is not valid JSON.")
@@ -98,6 +101,33 @@ function onReaderLoad(event) {
 
   const bounds = turf.bbox(geojsonObj);
   map.fitBounds([[bounds[0], bounds[1]], [bounds[2], bounds[3]]], {padding: 20});
+
+  // add popups
+  layers.forEach(layer => {
+    map.on('click', layer, function (e) {
+      if (e.features[0].properties.length > 0) {
+        var htmlStr = '<ul>';
+        Object.entries(e.features[0].properties).forEach(entry => {
+          htmlStr = htmlStr.concat(`<li>${entry[0]}: ${entry[1]}</li>`)
+        });
+        htmlStr.concat('</ul>')
+
+        new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(htmlStr)
+        .addTo(map);
+
+        map.on('mouseenter', layer, function () {
+          map.getCanvas().style.cursor = 'pointer';
+        });
+
+        map.on('mouseleave', layer, function () {
+          map.getCanvas().style.cursor = '';
+        });
+
+      }
+    });
+  });
 }
 
 document.getElementById('file').addEventListener('change', onChange);
