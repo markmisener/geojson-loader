@@ -1,15 +1,15 @@
-function onChange(event) {
+function loadFile(event) {
   var reader = new FileReader();
   reader.onload = onReaderLoad;
   reader.readAsText(event.target.files[0]);
 }
 
-function attemptJSONParse(str){
-    try {
-        return JSON.parse(str);
-    } catch (e) {
-        return false;
-    }
+function attemptJSONParse(str) {
+  try {
+    return JSON.parse(str);
+  } catch (e) {
+    return false;
+  }
 }
 
 function clearLayers(layers) {
@@ -28,6 +28,9 @@ function onReaderLoad(event) {
   var geojsonObj = attemptJSONParse(event.target.result);
   if (geojsonObj === false) {
     alert("File is not valid JSON.")
+    return false
+  } else if (!geojsonObj.hasOwnProperty("features")) {
+    alert("File must contain a valid GeoJSON FeatureCollection.")
     return false
   }
   var lines = [];
@@ -100,37 +103,40 @@ function onReaderLoad(event) {
   });
 
   const bounds = turf.bbox(geojsonObj);
-  map.fitBounds([[bounds[0], bounds[1]], [bounds[2], bounds[3]]], {padding: 20});
+  map.fitBounds([
+    [bounds[0], bounds[1]],
+    [bounds[2], bounds[3]]
+  ], {
+    padding: 20
+  });
 
   // add popups
   layers.forEach(layer => {
-    map.on('mouseenter', layer, function () {
+    map.on('mouseenter', layer, function() {
       map.getCanvas().style.cursor = 'pointer';
     });
 
-    map.on('mouseleave', layer, function () {
+    map.on('mouseleave', layer, function() {
       map.getCanvas().style.cursor = '';
     });
 
-    map.on('click', layer, function (e) {
+    map.on('click', layer, function(e) {
       if (Object.keys(e.features[0].properties).length > 0) {
         var htmlStr = '<div><ul>';
         Object.entries(e.features[0].properties).forEach(entry => {
           // add all properties except `other_tags`
           if (entry[0] !== 'other_tags') {
-              htmlStr = htmlStr.concat(`<li>${entry[0]}: ${entry[1]}</li>`)
+            htmlStr = htmlStr.concat(`<li>${entry[0]}: ${entry[1]}</li>`)
           }
         });
         htmlStr.concat('</ul></div>')
 
         new mapboxgl.Popup()
-        .setLngLat(e.lngLat)
-        .setHTML(htmlStr)
-        .addTo(map);
+          .setLngLat(e.lngLat)
+          .setHTML(htmlStr)
+          .addTo(map);
 
       }
     });
   });
 }
-
-document.getElementById('file').addEventListener('change', onChange);
