@@ -10,11 +10,16 @@ body {
   width: 100%;
 }
 
-#file {
+#form {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 99;
+  background-color: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 0 1pt 1pt lightgrey;
+  padding: 1%;
+  top: 15px;
+  left: 15px;
+  z-index: 1;
+  text-align: center;
 }
 
 /* Marker tweaks */
